@@ -32,5 +32,7 @@ pip install torch-cluster==1.5.9 -f https://pytorch-geometric.com/whl/torch-1.8.
 pip install torch-spline-conv==1.2.1 -f https://pytorch-geometric.com/whl/torch-1.8.1%2Bcu102.html
 
 pip install torch-geometric==2.1.0
+
+pip install lifelines==0.27.3
 ~~~
 
