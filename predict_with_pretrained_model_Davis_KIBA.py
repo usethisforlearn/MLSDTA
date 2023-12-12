@@ -44,7 +44,8 @@ for dataset in datasets:
 
         model_file_name = 'model_' + model_st + '_' + dataset + '.model'
         if os.path.isfile(model_file_name):
-            model.load_state_dict(torch.load(model_file_name), strict=False)
+            model.load_state_dict(torch.load(model_file_name, map_location={'cuda:2':'cuda:0', 'cuda:1':'cuda:0'}), strict=False)
+            
             G,P = predicting(model, device, test_loader)
             ret = [rmse(G, P), mse(G, P), pearson(G, P), spearman(G, P), ci(G, P),rm2(G,P)]
             ret =[dataset, model_st] + [round(e, 3) for e in ret]
