@@ -28,6 +28,14 @@ python predict_with_pretrained_model_Davis_KIBA.py
 - We have uploaded the trained model files on the KIBA dataset to location [model_MLSDTA_kiba.model](https://drive.google.com/file/d/1kI8ihfGguZP0OXUswgjB-gtwvmM4KaIw/view?usp=drive_link)
 - You can download our model files and reproduce our results by running 'python predict_with_pretrained_model_Davis_KIBA.py'.
 
+### Baseline model
+- [DeepDTA](https://github.com/hkmztrk/DeepDTA/)
+- [ELECTRA-DTA](https://github.com/IILab-Resource/ELECTRA-DTA)
+- [MATT_DTI](https://github.com/ZengYuni/MATT_DTI)
+- [MFRDTA](https://github.com/JU-HuaY/MFR)
+- [GraphDTA](https://github.com/thinng/GraphDTA)
+- [DGraphDTA](https://github.com/thinng/GraphDTA)
+- [MGraphDTA](https://github.com/thinng/GraphDTA)
 ~~~
 conda create -n MLSDTA python=3.7
 conda activate MLSDTA
