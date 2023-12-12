@@ -10,7 +10,7 @@ data file： https://drive.google.com/file/d/1C6ddjehyGs8K3T1Ji_zNfk-tlhOC81jv/v
 - 我们将davis数据集上训练好的模型文件上传到了https://drive.google.com/file/d/1kER88JYI8ZhwObv32V_8VJBctwR0kxx7/view?usp=drive_link ,我们将kiba数据集上训练好的模型文件上传到了https://drive.google.com/file/d/1kI8ihfGguZP0OXUswgjB-gtwvmM4KaIw/view?usp=drive_link ，您可以下载我们的模型文件，并通过 python predict_with_pretrained_model_Davis_KIBA.py 来复现我们的结果
 
 
-
+~~~
 conda create -n geometric python=3.7
 
 conda activate geometric
@@ -29,7 +29,6 @@ pip install torch-cluster==1.5.9 -f https://pytorch-geometric.com/whl/torch-1.8.
 
 pip install torch-spline-conv==1.2.1 -f https://pytorch-geometric.com/whl/torch-1.8.1%2Bcu102.html
 
-
 pip install torch-geometric
-
+~~~
 
