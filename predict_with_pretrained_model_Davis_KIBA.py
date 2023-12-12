@@ -9,7 +9,7 @@ from models.MLSDTA import MLSDTA
 datasets = ['davis','kiba']
 
 modelings = [MLSDTA]
-cuda_name = "cuda:1"
+cuda_name = "cuda:0"
 print('cuda_name:', cuda_name)
 
 TEST_BATCH_SIZE = 512
