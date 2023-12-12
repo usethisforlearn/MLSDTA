@@ -15,7 +15,7 @@ conda create -n geometric python=3.7
 
 conda activate geometric
 
-conda install -y -c conda-forge rdkit
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple  rdkit
 
 pip3 install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/cu102/torch_stable.html
 
