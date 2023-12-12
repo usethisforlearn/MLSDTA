@@ -34,8 +34,8 @@ python predict_with_pretrained_model_Davis_KIBA.py
 - [MATT_DTI](https://github.com/ZengYuni/MATT_DTI)
 - [MFRDTA](https://github.com/JU-HuaY/MFR)
 - [GraphDTA](https://github.com/thinng/GraphDTA)
-- [DGraphDTA](https://github.com/thinng/GraphDTA)
-- [MGraphDTA](https://github.com/thinng/GraphDTA)
+- [DGraphDTA](https://github.com/595693085/DGraphDTA)
+- [MGraphDTA](https://github.com/guaguabujianle/MGraphDTA)
 ~~~
 conda create -n MLSDTA python=3.7
 conda activate MLSDTA
