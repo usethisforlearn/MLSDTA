@@ -1,6 +1,15 @@
 # MLSDTA
 MLSDTA: Multimodal drug target binding affinity prediction using graph local substructure. This repository contains the source code and the data.
 
+### File
+- create_data.py：Load data from Davis and KIBA.
+- training_validation_Davis_KIBA.py:Train the model.
+- predict_with_pretrained_model_Davis_KIBA.py : Use the existing model files to test the data in the test set. The predicted results will be saved in the **predict_result.csv** file.
+- requirements.txt：Include packages for the virtual environment dependencies
+- utils.py：Include functions for training, prediction, evaluation metrics, and more
+- models ：Store the code for the model
+
+
 ### Data
 - Our data files are in [data](https://drive.google.com/file/d/1ABjUhkMWNN0Z47nDn0Mk0vMlp7ANctqs/view?usp=drive_link). Please download them first, and then unzip.
 - We have placed the dependencies for our experimental environment in the **requirements.txt** file. Additionally, we have exported an **environment.yml** file for your convenience in creating a virtual environment.
