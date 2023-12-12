@@ -3,7 +3,7 @@ MLSDTA: Multimodal drug target binding affinity prediction using graph local sub
 
 ### Data
 - Our data files are in [data](https://drive.google.com/file/d/1ABjUhkMWNN0Z47nDn0Mk0vMlp7ANctqs/view?usp=drive_link). Please download them first, and then unzip.
-- We have placed the dependencies for our experimental environment in the requirements.txt file. Additionally, we have exported an environment.yml file for your convenience in creating a virtual environment.
+- We have placed the dependencies for our experimental environment in the **requirements.txt** file. Additionally, we have exported an **environment.yml** file for your convenience in creating a virtual environment.
 
 ### Train
 - After deployment, please execute the following command to train the model.
@@ -11,7 +11,7 @@ MLSDTA: Multimodal drug target binding affinity prediction using graph local sub
 python training_validation_Davis_KIBA.py
 ~~~
 ### Test
-- You can execute the following command to utilize the saved model files for DTA prediction. The predicted results of the model will be saved in the predict_result.csv file.
+- You can execute the following command to utilize the saved model files for DTA prediction. The predicted results of the model will be saved in the **predict_result.csv** file.
 ~~~
 python predict_with_pretrained_model_Davis_KIBA.py
 ~~~
