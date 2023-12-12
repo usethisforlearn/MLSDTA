@@ -247,7 +247,7 @@ max_seq_len = 1000
 
 def create_dataset(dataset,fold=0):
     # ------------------------------create  CSV file-------------------------------------------
-    print('convert data from DeepDTA for ', dataset)
+    # print('convert data from DeepDTA for ', dataset)
     fpath = 'data/' + dataset + '/'
     train_fold = json.load(open(fpath + "folds/train_fold_setting1.txt"))  # len=5
     train_fold = [ee for e in train_fold for ee in e]  # davis len=25046
