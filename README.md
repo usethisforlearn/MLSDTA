@@ -8,6 +8,7 @@ MLSDTA: Multimodal drug target binding affinity prediction using graph local sub
 - **requirements.txt**：Include packages for the virtual environment dependencies
 - **utils.py**：Include functions for training, prediction, evaluation metrics, and more
 - **models** ：Store the code for the model
+- **baseline_predict.ipynb** : Load predictions of the baseline model and MLSDTA model, and generate charts.
 
 
 ### Data
