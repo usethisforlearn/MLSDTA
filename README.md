@@ -18,7 +18,7 @@ Here are the steps to use the dockerfile:
 - Download the dataset file to MLSDTA and extract it
 - Download the pre-trained model files model_MLSDTA_davis.model and model_MLSDTA_kiba.model to MLSDTA
 - Generate an image with dockerfile: `sudo docker build -t image_mlsdta -f Dockerfile .`
-- run the container: `sudo docker run-it image_mlsdta`
+- run the container: `sudo docker run -it image_mlsdta`
 
 
 ### Data
