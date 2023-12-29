@@ -1,5 +1,27 @@
 # MLSDTA
 MLSDTA: Multimodal drug target binding affinity prediction using graph local substructure. This repository contains the source code and the data.
+### Docker
+
+考虑到Dockerfile与论文代码无关，我们将dockerfile上传到了云盘，我们还提供了Dockerfile_CN版本，该版本在用pip安装依赖包时使用了清华的镜像源。
+下面是使用dockerfile的步骤：
+- 创建一个名为MLSDTA的文件夹
+- 下载论文代码压缩包到MLSDTA，并进行解压
+- 下载数据集文件到MLSDTA并解压
+- 下载预训练模型文件model_MLSDTA_davis.model和model_MLSDTA_kiba.model到MLSDTA
+- 用dockerfile生成镜像：  sudo docker build -t image_mlsdta -f Dockerfile .
+- 运行容器 : sudo docker run -it image_mlsdta
+
+
+Considering that the Dockerfile is not related to the paper code, we upload the [Dockerfile](https://drive.google.com/file/d/1YZnhd3ATqFFlgeoDwg1XbERcUxTHZ6t5/view?usp=drive_link) to the cloud disk, and we also provide the [Dockerfile_CN](https://drive.google.com/file/d/1Nh84XlzRdZ0cH_MdGiV9tqJOSgzSZDjF/view?usp=drive_link) version, which uses Qinghua's image source when installing the dependency package with pip.
+Here are the steps to use the dockerfile:
+- Create a folder called MLSDTA
+- Download the paper code package to MLSDTA and extract it
+- Download the dataset file to MLSDTA and extract it
+- Download the pre-trained model files model_MLSDTA_davis.model and model_MLSDTA_kiba.model to MLSDTA
+- Generate an image with dockerfile: `sudo docker build -t image_mlsdta -f Dockerfile`.
+- run the container: `sudo docker run-it image_mlsdta`
+
+
 
 ### File
 - **create_data.py**：Load data from Davis and KIBA.
