@@ -1,0 +1,17 @@
+dataset,model,ci,mse,r2m
+davis,DeepDTA,0.878,0.261,0.63
+davis,ELECTRA-DTA,0.897,0.238,0.671
+davis,MATT_DTI,0.891,0.227,0.683
+davis,MFRDTA,0.905,0.221,0.705
+davis,GraphDTA,0.893,0.229,0.705
+davis,DGraphDTA,0.894,0.216,0.671
+davis,MGraphDTA,0.9,0.207,0.71
+davis,MLSDTA,0.91,0.194,0.755
+kiba,DeepDTA,0.863,0.194,0.673
+kiba,ELECTRA-DTA,0.889,0.162,0.727
+kiba,MATT_DTI,0.889,0.15,0.756
+kiba,MFRDTA,0.898,0.136,0.789
+kiba,GraphDTA,0.891,0.139,0.674
+kiba,DGraphDTA,0.895,0.141,0.767
+kiba,MGraphDTA,0.902,0.128,0.801
+kiba,MLSDTA,0.903,0.126,0.801
