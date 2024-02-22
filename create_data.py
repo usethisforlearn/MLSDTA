@@ -11,7 +11,7 @@ import networkx as nx
 from utils import *
 
 
-
+# normalize the dictionary
 def dic_normalize(dic):
 
     max_value = dic[max(dic, key=dic.get)]
@@ -22,6 +22,7 @@ def dic_normalize(dic):
     dic['X'] = (max_value + min_value) / 2.0
     return dic
 
+# protein dictionary
 pro_res_table = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y','X']
 pro_res_aliphatic_table = ['A', 'I', 'L', 'M', 'V']
 pro_res_aromatic_table = ['F', 'W', 'Y']
@@ -55,6 +56,8 @@ res_hydrophobic_ph2_table = {'A': 47, 'C': 52, 'D': -18, 'E': 8, 'F': 92, 'G': 0
 res_hydrophobic_ph7_table = {'A': 41, 'C': 49, 'D': -55, 'E': -31, 'F': 100, 'G': 0, 'H': 8, 'I': 99,
                              'K': -23, 'L': 97, 'M': 74, 'N': -28, 'P': -46, 'Q': -10, 'R': -14, 'S': -5,
                              'T': 13, 'V': 76, 'W': 97, 'Y': 63}
+
+# target graph node features
 res_weight_table = dic_normalize(res_weight_table)
 res_pka_table = dic_normalize(res_pka_table)
 res_pkb_table = dic_normalize(res_pkb_table)
@@ -63,6 +66,7 @@ res_pl_table = dic_normalize(res_pl_table)
 res_hydrophobic_ph2_table = dic_normalize(res_hydrophobic_ph2_table)
 res_hydrophobic_ph7_table = dic_normalize(res_hydrophobic_ph7_table)
 
+# get residue features
 def residue_features(residue):
     res_property1 = [1 if residue in pro_res_aliphatic_table else 0, 1 if residue in pro_res_aromatic_table else 0,
                      1 if residue in pro_res_polar_neutral_table else 0,
@@ -74,7 +78,7 @@ def residue_features(residue):
     return np.array(res_property1 + res_property2)
 
 
-# drug sequence------------------------------------------------------
+# drug sequence dictionary------------------------------------------------------
 CHARISOSMISET = {"#": 29, "%": 30, ")": 31, "(": 1, "+": 32, "-": 33, "/": 34, ".": 2,
 				"1": 35, "0": 3, "3": 36, "2": 4, "5": 37, "4": 5, "7": 38, "6": 6,
 				"9": 39, "8": 7, "=": 40, "A": 41, "@": 8, "C": 42, "B": 9, "E": 43,
@@ -86,6 +90,7 @@ CHARISOSMISET = {"#": 29, "%": 30, ")": 31, "(": 1, "+": 32, "-": 33, "/": 34, "
 
 CHARISOSMILEN = 64
 
+# map the symbol of atom to label
 def label_smiles(line, MAX_SMI_LEN, smi_ch_ind):
 	X = np.zeros(MAX_SMI_LEN)
 	for i, ch in enumerate(line[:MAX_SMI_LEN]): #	x, smi_ch_ind, y
@@ -93,8 +98,7 @@ def label_smiles(line, MAX_SMI_LEN, smi_ch_ind):
 
 	return X #.tolist()
 
-#drug graph------------------------------------------------------------------------
-
+# get all drug graph node features ------------------------------------------------------------------------
 def atom_features(atom):
     return np.array(one_of_k_encoding_unk(atom.GetSymbol(),['C', 'N', 'O', 'S', 'F', 'Si', 'P', 'Cl', 'Br', 'Mg', 'Na','Ca', 'Fe', 'As', 'Al', 'I', 'B', 'V', 'K', 'Tl', 'Yb','Sb', 'Sn', 'Ag', 'Pd', 'Co', 'Se', 'Ti', 'Zn', 'H','Li', 'Ge', 'Cu', 'Au', 'Ni', 'Cd', 'In', 'Mn', 'Zr','Cr', 'Pt', 'Hg', 'Pb', 'Unknown']) +
                     one_of_k_encoding(atom.GetDegree(), [0, 1, 2, 3, 4, 5, 6,7,8,9,10]) +
@@ -102,7 +106,7 @@ def atom_features(atom):
                     one_of_k_encoding_unk(atom.GetImplicitValence(), [0, 1, 2, 3, 4, 5, 6,7,8,9,10]) +
                     [atom.GetIsAromatic()])
 
-
+# map x to one-hot encoding
 def one_of_k_encoding(x, allowable_set):
     if x not in allowable_set:
         raise Exception("input {0} not in allowable set{1}:".format(x, allowable_set))
@@ -115,7 +119,7 @@ def one_of_k_encoding_unk(x, allowable_set):
         x = allowable_set[-1]
     return list(map(lambda s: x == s, allowable_set))
 
-
+# create a drug graph
 def smile_to_graph(smile):
     mol = Chem.MolFromSmiles(smile)
     c_size = mol.GetNumAtoms()
@@ -135,20 +139,15 @@ def smile_to_graph(smile):
         
     return c_size, features, edge_index
 
-# target sequence--------------------------------------------------------
+# map target sequence to label--------------------------------------------------------
 def seq_cat(prot):
     x = np.zeros(max_seq_len)
     for i, ch in enumerate(prot[:max_seq_len]): 
         x[i] = seq_dict[ch]
     return x
 
-# target graph from DgraphDTA---------------------------------------------------------
-
-
-
-
+# target graph node fature (pssm)---------------------------------------------------------
 def PSSM_calculation(aln_file, pro_seq):
-    # 蛋白质特征矩阵
     pfm_mat = np.zeros((len(pro_res_table), len(pro_seq)))
     with open(aln_file, 'r') as f:
         line_count = len(f.readlines())
@@ -175,7 +174,7 @@ def PSSM_calculation(aln_file, pro_seq):
     return pssm_mat
 
 
-# target sequence feature
+# get all target graph node features except pssm
 def seq_feature(pro_seq):
     pro_hot = np.zeros((len(pro_seq), len(pro_res_table)))
     pro_property = np.zeros((len(pro_seq), 12))
@@ -186,6 +185,7 @@ def seq_feature(pro_seq):
         pro_property[i,] = residue_features(pro_seq[i])
     return np.concatenate((pro_hot, pro_property), axis=1)
 
+# concatenate pssm and other node features
 def target_feature(aln_file, pro_seq):
     pssm = PSSM_calculation(aln_file, pro_seq)
     other_feature = seq_feature(pro_seq)
@@ -197,6 +197,7 @@ def target_feature(aln_file, pro_seq):
     # return other_feature
     return np.concatenate((np.transpose(pssm, (1, 0)), other_feature), axis=1)
 
+# get all target graph node feature
 def target_to_feature(target_key, target_sequence, aln_dir):
     # aln_dir = 'data/' + dataset + '/aln'
     aln_file = os.path.join(aln_dir, target_key + '.aln')
@@ -244,10 +245,9 @@ max_seq_len = 1000
 
 
 
-
+# create train data and test data
 def create_dataset(dataset,fold=0):
     # ------------------------------create  CSV file-------------------------------------------
-    # print('convert data from DeepDTA for ', dataset)
     fpath = 'data/' + dataset + '/'
     train_fold = json.load(open(fpath + "folds/train_fold_setting1.txt"))  # len=5
     train_fold = [ee for e in train_fold for ee in e]  # davis len=25046
@@ -267,15 +267,16 @@ def create_dataset(dataset,fold=0):
     prots = []
     prot_keys = []
     drug_smiles = []
-    # smiles
+    # get smiles sequence list
     for d in ligands.keys():
         lg = Chem.MolToSmiles(Chem.MolFromSmiles(ligands[d]), isomericSmiles=True)
         drugs.append(lg)  # loading drugs
         drug_smiles.append(ligands[d])
-    # targets
+    # get target sequence list
     for t in proteins.keys():
         prots.append(proteins[t])  # loading proteins
         prot_keys.append(t)
+
 
     if dataset == 'davis':
         affinity = [-np.log10(y / 1e9) for y in affinity]
@@ -286,13 +287,13 @@ def create_dataset(dataset,fold=0):
     for opt in opts:
         rows, cols = np.where(np.isnan(affinity) == False)  # not NAN
         if opt == 'train':
-            rows, cols = rows[train_fold], cols[train_fold]  # train fold包含了drug和prot的index信息
+            rows, cols = rows[train_fold], cols[train_fold]  # Train fold contains index information for both drug and target
         elif opt == 'test':
             rows, cols = rows[valid_fold], cols[valid_fold]
         with open('data/' + dataset + '_' + opt + '.csv', 'w') as f:
             f.write('compound_iso_smiles,target_key,target_sequence,affinity\n')
             for pair_ind in range(len(rows)):
-                if not valid_target(prot_keys[cols[pair_ind]], dataset):  # 判断key是否存在 aln 和 pconsc4 文件
+                if not valid_target(prot_keys[cols[pair_ind]], dataset):  # Check if there are aln and pconsc4 files
                     continue
                 ls = []
                 ls += [drugs[rows[pair_ind]]]
@@ -309,18 +310,19 @@ def create_dataset(dataset,fold=0):
 
     compound_iso_smiles = drugs
     target_key = prot_keys
-
+    # durg graph data
     smile_graph = {}
     for smile in compound_iso_smiles:
         g = smile_to_graph(smile)
         smile_graph[smile] = g
     print('finish drug graph')
+    # drug sequence data
     smile_tensor = {}
     for smile in compound_iso_smiles:
         smi_tensor = label_smiles(smile, 100, CHARISOSMISET)
         smile_tensor[smile] = smi_tensor
     print('finish drug sequence')
-
+    # target graph data
     target_graph = {}
     for key in target_key:
         if not valid_target(key, dataset):  # ensure the contact and aln files exists
@@ -333,6 +335,7 @@ def create_dataset(dataset,fold=0):
         raise Exception('没有 aln 文件和 pconsc4文件。')
     df = pd.read_csv('data/' + dataset + '_train.csv')
     train_drugs, train_prots,  train_Y = list(df['compound_iso_smiles']),list(df['target_sequence']),list(df['affinity'])
+    # target sequence data
     train_prot_keys = np.asarray(list(df['target_key']))
     XT = [seq_cat(t) for t in train_prots]
 
