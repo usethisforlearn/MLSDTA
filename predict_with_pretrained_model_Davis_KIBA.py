@@ -18,7 +18,7 @@ result = []
 for dataset in datasets:
 
     start_time = time.time()
-
+    # load data
     test_data_file = "./data/" + dataset + "_testdata_"+str(TEST_BATCH_SIZE)+".data"
     if not os.path.isfile(test_data_file):
         _, test_data = create_dataset(dataset)
@@ -27,14 +27,14 @@ for dataset in datasets:
         test_data = torch.load(test_data_file)
 
 
-    print('完成dataset加载。')
+    print('load dataset successfully')
     test_loader = torch.utils.data.DataLoader(test_data, batch_size=TEST_BATCH_SIZE, shuffle=False, collate_fn=collate)
 
-    print('完成dataloader加载。')
+    print('Complete dataloader loading')
     end_time = time.time()
     all_time = end_time - start_time
-    print('数据准备一共耗时:', all_time, '秒')
-
+    print('The data preparation took a total of ', all_time, ' seconds')
+    # Predicting the affinity of test data
     for modeling in modelings:
         model_st = modeling.__name__
         print('\npredicting for ', dataset, ' using ', model_st)
@@ -46,7 +46,7 @@ for dataset in datasets:
         if os.path.isfile(model_file_name):
             # model.load_state_dict(torch.load(model_file_name, map_location={'cuda:2':'cuda:0', 'cuda:1':'cuda:0'}), strict=False)
             model.load_state_dict(torch.load(model_file_name, map_location=torch.device('cpu')), strict=False)
-            
+            # G is label, P is the predicted result
             G,P = predicting(model, device, test_loader)
             ret = [rmse(G, P), mse(G, P), pearson(G, P), spearman(G, P), ci(G, P),rm2(G,P)]
             ret =[dataset, model_st] + [round(e, 3) for e in ret]
