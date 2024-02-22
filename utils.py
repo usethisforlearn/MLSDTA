@@ -127,7 +127,7 @@ def train(model, device, train_loader, optimizer, epoch):
                                                                            100. * batch_idx / len(train_loader),
                                                                            loss.item()))
 
-
+# predicting function
 def predicting(model, device, loader):
     model.eval()
     total_preds = torch.Tensor()
@@ -148,27 +148,27 @@ def collate(data_list):
     batchB = Batch.from_data_list([data[1] for data in data_list])
     return batchA, batchB
 
-
+# metrics_rmse
 def rmse(y, f):
     rmse = sqrt(((y - f)**2).mean(axis=0))
     return rmse
 
-
+# metrics_mse
 def mse(y, f):
     mse = ((y - f)**2).mean(axis=0)
     return mse
 
-
+# metrics_pearson
 def pearson(y, f):
     rp = np.corrcoef(y, f)[0,1]
     return rp
 
-
+# metrics_spearman
 def spearman(y, f):
     rs = stats.spearmanr(y, f)[0]
     return rs
 
-
+# metrics_ci
 def ci_tensor(f, y):  # p,y
     y = np.array(y.tolist())
     f = np.array(f.tolist())
@@ -195,7 +195,7 @@ def ci_tensor(f, y):  # p,y
     ci = S/z
     return torch.tensor(ci)
 
-
+# metrics_ci
 def ci(y, f):
     ind = np.argsort(y)
     y = y[ind]
@@ -219,7 +219,7 @@ def ci(y, f):
     ci = S/z
     return ci
 
-
+#  r2 for r2m
 def r_squared_error(y_obs, y_pred):
     y_obs = np.array(y_obs)
     y_pred = np.array(y_pred)
@@ -240,6 +240,7 @@ def get_k(y_obs, y_pred):
 
     return sum(y_obs * y_pred) / float(sum(y_pred * y_pred))
 
+# r0 for r2m
 def squared_error_zero(y_obs, y_pred):
     k = get_k(y_obs, y_pred)
 
@@ -251,6 +252,7 @@ def squared_error_zero(y_obs, y_pred):
 
     return 1 - (upp / float(down))
 
+# metrics_rm2
 def rm2(ys_orig, ys_line):
     r2 = r_squared_error(ys_orig, ys_line)
     r02 = squared_error_zero(ys_orig, ys_line)
