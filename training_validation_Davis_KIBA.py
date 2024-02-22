@@ -46,21 +46,21 @@ for dataset in datasets:
     test_data_file = "./data/" + dataset + "_testdata_"+ str(TEST_BATCH_SIZE) +".data"
     if not (os.path.isfile(train_data_file) and os.path.isfile(test_data_file)):
         train_data, test_data = create_dataset(dataset)
-        torch.save(train_data, train_data_file)  # 保存训练数据
-        torch.save(test_data, test_data_file)  # 保存训练数据
+        torch.save(train_data, train_data_file)  # save train data
+        torch.save(test_data, test_data_file)  # save test data
     else:
         train_data = torch.load(train_data_file)
         test_data = torch.load(test_data_file)
 
-    print('完成dataset加载。')
+    print('load dataset successfully')
     # make data PyTorch mini-batch processing ready
 
     train_loader = torch.utils.data.DataLoader(train_data, batch_size=TRAIN_BATCH_SIZE, shuffle=True, collate_fn=collate)
     test_loader = torch.utils.data.DataLoader(test_data, batch_size=TEST_BATCH_SIZE, shuffle=False, collate_fn=collate)
-    print('完成dataloader加载。')
+    print('complete dataloader loading')
     end_time = time.time()
     all_time = end_time-start_time
-    print('数据准备一共耗时:',all_time,'秒')
+    print('The data preparation took a total of ',all_time,' seconds')
     # training the model
     device = torch.device(cuda_name if torch.cuda.is_available() else "cpu")
     model = modeling().to(device)
@@ -99,5 +99,5 @@ for dataset in datasets:
         elif (epoch - best_epoch)<500:
             print(ret[0], 'No improvement since epoch ', best_epoch, '; best_mse,best_ci:', best_mse, best_ci, model_st, dataset)
         else:
-            print('提前停止 ''; best_mse,best_ci:', best_mse, best_ci,model_st, dataset)
+            print('early stop  ''; best_mse,best_ci:', best_mse, best_ci,model_st, dataset)
             break
