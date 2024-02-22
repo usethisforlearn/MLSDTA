@@ -15,7 +15,7 @@ class MLSDTA(torch.nn.Module):
         self.norm_mode = 'PN-SI'
         self.norm_scale = 1
 
-        # drug graph -------------------------------------------------------------------------------------------
+        # drug graph feature extractor-------------------------------------------------------------------------------------------
         self.n_output = n_output
 
         self.gcn_drug1 = GCNConv(num_features_xd, num_features_xd)
@@ -35,7 +35,7 @@ class MLSDTA(torch.nn.Module):
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(dropout_rate)
 
-        # target sequence -------------------------------------------------------------------------------------
+        # target sequence feature extractor -------------------------------------------------------------------------------------
         self.embedding_xt = nn.Embedding(num_features_xt + 1, embed_dim)
 
         self.conv_prot1 = nn.Conv1d(in_channels=1000, out_channels=4 * n_filters, kernel_size=3, padding=1)
@@ -58,7 +58,7 @@ class MLSDTA(torch.nn.Module):
         self.fc_prot2 = nn.Linear(n_filters*embed_dim, output_dim)
         self.bn_fc_prot2 = nn.BatchNorm1d(output_dim)
 
-        # drug sequence-----------------------------------------------------------------------------------------------------
+        # drug sequence feature extractor-----------------------------------------------------------------------------------------------------
         self.embedding_xd = nn.Embedding(100, embed_dim)
         self.conv_smile1 = nn.Conv1d(in_channels=100, out_channels=2 * n_filters, kernel_size=3, padding=1)
         self.bn_conv_smile1 = nn.BatchNorm1d(2 * n_filters)
@@ -80,7 +80,7 @@ class MLSDTA(torch.nn.Module):
         self.fc_smile2 = nn.Linear(n_filters * embed_dim, output_dim)
         self.bn_fc_smile2 = nn.BatchNorm1d(output_dim)
 
-        # target graph----------------------------------------------------------------------------------------------------
+        # target graph feature extractor----------------------------------------------------------------------------------------------------
         self.num_features_xt = 54
         self.gcn_target1 = GCNConv(self.num_features_xt, self.num_features_xt)
         self.bn_gcn_target1 = PairNorm(self.norm_mode, self.norm_scale)
@@ -97,9 +97,7 @@ class MLSDTA(torch.nn.Module):
         self.bn_fc_targetgraph = nn.BatchNorm1d(output_dim)  # 1024
 
 
-        # ----------------------------------------------------------------------------------------------
-
-
+        # affinity predictor----------------------------------------------------------------------------------------------
         self.fc_concat1 = nn.Linear(8 * output_dim, 1024)
         self.bn_fc_concat1 = nn.BatchNorm1d(1024)
         self.fc_concat2 = nn.Linear(1024, 512)
@@ -107,12 +105,16 @@ class MLSDTA(torch.nn.Module):
         self.out = nn.Linear(512, self.n_output)
 
     def forward(self, DrugData, TargetData):
+        # get drug graph data
         x, edge_index, batch = DrugData.x, DrugData.edge_index, DrugData.batch
+        # get drug sequence data
         smiles = DrugData.smiles
+        # get target graph data
         tx , target_edge_index ,tar_batch = TargetData.x, TargetData.edge_index ,TargetData.batch
+        # get target sequence data
         target = TargetData.target  # batch_size=512, seq_len=1000
 
-        # drug graph----------------------------------------------------------------------------------------------------
+        # drug graph feature extraction----------------------------------------------------------------------------------------------------
         graph_xd = self.relu(self.bn_gcn_drug1(self.gcn_drug1(x, edge_index)))
         x1 = graph_xd
         graph_xd = self.relu(self.bn_gcn_drug2(self.gcn_drug2(graph_xd, edge_index)))
@@ -128,7 +130,7 @@ class MLSDTA(torch.nn.Module):
         graph_xd = torch.add(gmp(graph_xd, batch), gap(graph_xd, batch)) / 2
         graph_xd = self.dropout(self.relu(self.bn_fc_druggraph(self.fc_druggraph(graph_xd))))
 
-        # target sequence------------------------------------------------------------------------------------------------------
+        # target sequence feature extraction------------------------------------------------------------------------------------------------------
         embedded_xt = self.embedding_xt(target)  # 512*1000*128
         conv_xt = self.relu(self.bn_conv_prot1(self.conv_prot1(embedded_xt)))  # 512*(32*4)*128
         conv_xt = self.relu(self.bn_conv_prot2(self.conv_prot2(conv_xt)))  # 512*(32*2)*128
@@ -142,7 +144,7 @@ class MLSDTA(torch.nn.Module):
         conv_xt = self.dropout(self.bn_fc_prot2(self.relu(self.fc_prot2(conv_xt))))
 
 
-        # drug sequence
+        # drug sequence feature extraction
         embedded_xd = self.embedding_xd(smiles)  # 512*100*128
         conv_xd = self.relu(self.bn_conv_smile1(self.conv_smile1(embedded_xd)))  # 512*(64)*128
         conv_xd = self.relu(self.bn_conv_smile2(self.conv_smile2(conv_xd)))  # 512*(32)*128
@@ -153,7 +155,7 @@ class MLSDTA(torch.nn.Module):
         conv_xd = self.dropout(self.bn_fc_smile1(self.relu(self.fc_smile1(conv_xd))))
         conv_xd = self.dropout(self.bn_fc_smile2(self.relu(self.fc_smile2(conv_xd))))
 
-        # target graph
+        # target graph feature extraction
         graph_xt = self.relu(self.bn_gcn_target1(self.gcn_target1(tx, target_edge_index)))
         xt1 = graph_xt
 
@@ -171,11 +173,14 @@ class MLSDTA(torch.nn.Module):
         graph_xt, target_edge_index, _, tar_batch, _ = self.targetpool1(graph_xt, target_edge_index, None, tar_batch)
         graph_xt = torch.add(gmp(graph_xt, tar_batch), gap(graph_xt, tar_batch)) / 2
         graph_xt = self.dropout(self.relu(self.bn_fc_targetgraph(self.fc_targetgraph(graph_xt))))
-
+        
+        # multimodal feature attention
         atten_graph_xt = graph_xt * (F.softmax(graph_xt * conv_xt))
         atten_conv_xt = conv_xt * (F.softmax(graph_xt * conv_xt))
         atten_graph_xd = graph_xd * (F.softmax(graph_xd * conv_xd))
         atten_conv_xd = conv_xd * (F.softmax(graph_xd * conv_xd))
+        
+        # predictor
 
         xc = torch.cat([graph_xt, graph_xd,conv_xt, conv_xd,atten_graph_xt, atten_graph_xd,atten_conv_xt, atten_conv_xd], dim=1)
         xc = self.dropout(self.bn_fc_concat1(self.relu(self.fc_concat1(xc))))
