@@ -119,13 +119,17 @@ class MLSDTA(torch.nn.Module):
         x1 = graph_xd
         graph_xd = self.relu(self.bn_gcn_drug2(self.gcn_drug2(graph_xd, edge_index)))
         x2 = graph_xd
+        
+        # dropnode
         drug_mask = torch.rand(graph_xd.size(0)) > self.dropnode_rate
         drug_mask = drug_mask.to(x2.device)
         drug_mask = drug_mask.float().view(-1, 1)
         graph_xd = drug_mask * graph_xd
+        
         graph_xd = self.relu(self.bn_gcn_drug3(self.gcn_drug3(graph_xd, edge_index)))
         x3 = graph_xd
         graph_xd = torch.cat([x1, x2, x3], dim=1)  # 16571*234
+        # asapool
         graph_xd, edge_index, _, batch, _ = self.pool1(graph_xd, edge_index, None, batch)
         graph_xd = torch.add(gmp(graph_xd, batch), gap(graph_xd, batch)) / 2
         graph_xd = self.dropout(self.relu(self.bn_fc_druggraph(self.fc_druggraph(graph_xd))))
@@ -135,10 +139,11 @@ class MLSDTA(torch.nn.Module):
         conv_xt = self.relu(self.bn_conv_prot1(self.conv_prot1(embedded_xt)))  # 512*(32*4)*128
         conv_xt = self.relu(self.bn_conv_prot2(self.conv_prot2(conv_xt)))  # 512*(32*2)*128
         conv_xt = self.relu(self.bn_conv_prot3(self.conv_prot3(conv_xt)))  # 512*(32*1)*128
-        # flatten
+        
+        # senet
         conv_xt_se = self.target_se(conv_xt)
         conv_xt = conv_xt * conv_xt_se
-
+        # flatten
         conv_xt = conv_xt.view(-1, 32*128)  # 512*1* (32*128)
         conv_xt = self.dropout(self.bn_fc_prot1(self.relu(self.fc_prot1(conv_xt))))
         conv_xt = self.dropout(self.bn_fc_prot2(self.relu(self.fc_prot2(conv_xt))))
@@ -148,6 +153,7 @@ class MLSDTA(torch.nn.Module):
         embedded_xd = self.embedding_xd(smiles)  # 512*100*128
         conv_xd = self.relu(self.bn_conv_smile1(self.conv_smile1(embedded_xd)))  # 512*(64)*128
         conv_xd = self.relu(self.bn_conv_smile2(self.conv_smile2(conv_xd)))  # 512*(32)*128
+        # senet
         conv_xd_se = self.drug_se(conv_xd)
         conv_xd = conv_xd * conv_xd_se
         # flatten
@@ -158,18 +164,20 @@ class MLSDTA(torch.nn.Module):
         # target graph feature extraction
         graph_xt = self.relu(self.bn_gcn_target1(self.gcn_target1(tx, target_edge_index)))
         xt1 = graph_xt
-
         graph_xt = self.relu(self.bn_gcn_target2(self.gcn_target2(graph_xt, target_edge_index)))
         xt2 = graph_xt
+        
+        # dropnode
         target_mask = torch.rand(graph_xt.size(0)) > self.dropnode_rate
         target_mask = target_mask.to(xt2.device)
         target_mask = target_mask.float().view(-1, 1)
         graph_xt = target_mask * graph_xt
+        
         graph_xt = self.relu(self.bn_gcn_target3(self.gcn_target3(graph_xt, target_edge_index)))
         xt3 = graph_xt
-
-
+        
         graph_xt = torch.cat([xt1, xt2, xt3], dim=1)  # 16571*234
+        # asapool
         graph_xt, target_edge_index, _, tar_batch, _ = self.targetpool1(graph_xt, target_edge_index, None, tar_batch)
         graph_xt = torch.add(gmp(graph_xt, tar_batch), gap(graph_xt, tar_batch)) / 2
         graph_xt = self.dropout(self.relu(self.bn_fc_targetgraph(self.fc_targetgraph(graph_xt))))
