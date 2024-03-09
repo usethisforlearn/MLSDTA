@@ -1,0 +1,1 @@
+python test_for_DTA.py --model BUNet --dataset davis

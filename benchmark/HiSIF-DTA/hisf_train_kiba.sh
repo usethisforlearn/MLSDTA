@@ -1,0 +1,1 @@
+python training_for_DTA.py --model TDNet --epochs 2000 --batch 512 --LR 0.0005 --log_interval 20 --device 0 --dataset kiba --num_workers 6
