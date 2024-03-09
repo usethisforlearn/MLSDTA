@@ -1,0 +1,1 @@
+python test.py --dataset kiba --model_path ./save/mgraphdta_kiba.pt
