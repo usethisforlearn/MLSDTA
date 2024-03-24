@@ -20,6 +20,32 @@ Here are the steps to use the dockerfile:
 - Generate an image with dockerfile: `sudo docker build -t image_mlsdta -f Dockerfile .`
 - run the container: `sudo docker run -it image_mlsdta`
 
+## How to train
+ - Please download the data first, then unzip them, here is the link to download ([data](https://zenodo.org/records/10597707))
+ - We provided bash files, and you can train the model with the bash command or python code provided below
+ - Bash command:
+~~~
+bash training.sh
+~~~
+ - Python command：
+~~~
+python training_validation_Davis_KIBA.py
+~~~
+
+## How to test
+ - Download the model parameter file. We uploaded the model file trained on the davis and kiba data set to model file ().
+ - We have provided a bash file, and you can conduct model testing using the bash or Python commands provided below.
+ - Bash command:
+~~~
+bash testing.sh
+~~~
+ - Python command:
+~~~
+python predict_with_pretrained_model_Davis_KIBA.py
+~~~
+After completing model testing, the predicted results will be saved in predict_result.csv. You can view the performance of the model in this file.
+
+
 
 ### Data
 - Our data files are in [data](https://drive.google.com/file/d/1ABjUhkMWNN0Z47nDn0Mk0vMlp7ANctqs/view?usp=drive_link). Please download them first, and then unzip.
