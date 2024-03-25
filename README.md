@@ -1,6 +1,43 @@
 # MLSDTA
 MLSDTA: Multimodal drug target binding affinity prediction using graph local substructure. This repository contains the source code and the data.
 
+### Data
+- Our data files are in [data](https://drive.google.com/file/d/1ABjUhkMWNN0Z47nDn0Mk0vMlp7ANctqs/view?usp=drive_link)(google drive) and [data](https://zenodo.org/records/10597707). Please download them first, and then unzip.
+- We have placed the dependencies for our experimental environment in the **requirements.txt** file. Additionally, we have exported an **environment.yml** file for your convenience in creating a virtual environment.
+- We have uploaded the trained model files on the Davis dataset to location [model_MLSDTA_davis.model](https://drive.google.com/file/d/1kER88JYI8ZhwObv32V_8VJBctwR0kxx7/view?usp=drive_link)(google) and [model](https://zenodo.org/records/10598088)(zenodo).
+- We have uploaded the trained model files on the KIBA dataset to location [model_MLSDTA_kiba.model](https://drive.google.com/file/d/1kI8ihfGguZP0OXUswgjB-gtwvmM4KaIw/view?usp=drive_link)(google) and [model](https://zenodo.org/records/10598088)(zenodo).
+
+
+## How to reproduce our result
+ - Please download the [pre-trained model files](https://zenodo.org/records/10598088).
+ - Please download and unzip the [data files](https://zenodo.org/records/10597707).
+ - Please run the following bash command or Python script to reproduce our results:
+ - Bash command:
+~~~
+bash testing.sh
+~~~
+ - Python command:
+~~~
+python predict_with_pretrained_model_Davis_KIBA.py
+~~~
+After completing model testing, the predicted results will be saved in **predict_result.csv**. You can view the performance of the model in this file.
+
+
+## How to train
+ - Please download the [data](https://zenodo.org/records/10597707) first, then unzip them, here is the link to download ()
+ - After deployment, please execute the following command to train the model.
+ - Bash command:
+~~~
+bash training.sh
+~~~
+ - Python command：
+~~~
+python training_validation_Davis_KIBA.py
+~~~
+
+
+
+
 ### File
 - **create_data.py**：Load data from Davis and KIBA.
 - **training_validation_Davis_KIBA.py**:Train the model.
@@ -20,50 +57,7 @@ Here are the steps to use the dockerfile:
 - Generate an image with dockerfile: `sudo docker build -t image_mlsdta -f Dockerfile .`
 - run the container: `sudo docker run -it image_mlsdta`
 
-## How to train
- - Please download the data first, then unzip them, here is the link to download ([data](https://zenodo.org/records/10597707))
- - We provided bash files, and you can train the model with the bash command or python code provided below
- - Bash command:
-~~~
-bash training.sh
-~~~
- - Python command：
-~~~
-python training_validation_Davis_KIBA.py
-~~~
 
-## How to test
- - Download the model parameter file. We uploaded the model file trained on the davis and kiba data set to model file ().
- - We have provided a bash file, and you can conduct model testing using the bash or Python commands provided below.
- - Bash command:
-~~~
-bash testing.sh
-~~~
- - Python command:
-~~~
-python predict_with_pretrained_model_Davis_KIBA.py
-~~~
-After completing model testing, the predicted results will be saved in predict_result.csv. You can view the performance of the model in this file.
-
-
-
-### Data
-- Our data files are in [data](https://drive.google.com/file/d/1ABjUhkMWNN0Z47nDn0Mk0vMlp7ANctqs/view?usp=drive_link). Please download them first, and then unzip.
-- We have placed the dependencies for our experimental environment in the **requirements.txt** file. Additionally, we have exported an **environment.yml** file for your convenience in creating a virtual environment.
-
-### Train
-- After deployment, please execute the following command to train the model.
-~~~
-python training_validation_Davis_KIBA.py
-~~~
-### Test
-- You can execute the following command to utilize the saved model files for DTA prediction. The predicted results of the model will be saved in the **predict_result.csv** file.
-~~~
-python predict_with_pretrained_model_Davis_KIBA.py
-~~~
-- We have uploaded the trained model files on the Davis dataset to location [model_MLSDTA_davis.model](https://drive.google.com/file/d/1kER88JYI8ZhwObv32V_8VJBctwR0kxx7/view?usp=drive_link)
-- We have uploaded the trained model files on the KIBA dataset to location [model_MLSDTA_kiba.model](https://drive.google.com/file/d/1kI8ihfGguZP0OXUswgjB-gtwvmM4KaIw/view?usp=drive_link)
-- You can download our model files and reproduce our results by running 'python predict_with_pretrained_model_Davis_KIBA.py'.
 
 ### Baseline model
 - [DeepDTA](https://github.com/hkmztrk/DeepDTA/)
